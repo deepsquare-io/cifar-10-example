@@ -1,0 +1,20 @@
+[[source]]
+url = "https://pypi.org/simple"
+verify_ssl = false
+name = "pip_conf_index_global"
+
+[packages]
+numpy = "*"
+torch = "*"
+torchvision = "*"
+torchaudio = "*"
+
+[dev-packages]
+black = "*"
+pylint = "*"
+
+[requires]
+python_version = "3.10"
+
+[pipenv]
+allow_prereleases = true
