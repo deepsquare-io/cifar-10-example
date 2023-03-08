@@ -33,4 +33,3 @@ COPY . .
 
 # Run the application
 ENTRYPOINT ["python3", "main.py"]
-CMD ["-r"]
