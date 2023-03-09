@@ -5,11 +5,15 @@ ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
+RUN apt update -y \
+  && apt install -y \
+  python3 \
+  && rm -rf /var/lib/apt/lists/*
+
 FROM base AS python-deps
 
 RUN apt update -y \
   && apt install -y \
-  python3 \
   python3-pip \
   && rm -rf /var/lib/apt/lists/*
 
@@ -25,7 +29,6 @@ FROM base AS runtime
 
 # Copy virtual env from python-deps stage
 COPY --from=python-deps /.venv /.venv
-ENV PATH="/.venv/bin:$PATH"
 
 WORKDIR /app
 
@@ -33,4 +36,4 @@ WORKDIR /app
 COPY . .
 
 # Run the application
-ENTRYPOINT ["python3", "main.py"]
+ENTRYPOINT ["/.venv/bin/python3", "main.py"]
