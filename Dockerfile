@@ -27,6 +27,11 @@ RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
 
 FROM base AS runtime
 
+RUN apt update -y \
+  && apt install -y \
+  g++ \
+  && rm -rf /var/lib/apt/lists/*
+
 # Copy virtual env from python-deps stage
 COPY --from=python-deps /.venv /.venv
 

@@ -74,10 +74,10 @@ if torch.cuda.device_count() >= 1:
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
 else:
-    print("Parallelized on", torch.cpu.device_count(), "CPUs!")
+    print("Parallelized on", torch.get_num_threads(), "threads!")
 net = net.to(device)
 net = torch.compile(net)
-print("Model is compiled!")
+print("Model is JIT-compiling enabled!")
 
 if args.checkpoint_in:
     # Load checkpoint.
