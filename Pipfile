@@ -3,11 +3,17 @@ url = "https://pypi.org/simple"
 verify_ssl = false
 name = "pip_conf_index_global"
 
+[[source]]
+name = "pytorch"
+url = "https://download.pytorch.org/whl/nightly/cu117"
+verify_ssl = true
+
 [packages]
 numpy = "*"
-torch = "*"
-torchvision = "*"
-torchaudio = "*"
+torch = {index = "pytorch", version = "*"}
+pytorch-triton = {index = "pytorch", version = "*"}
+torchvision = {index = "pytorch", version = "*"}
+torchaudio = {index = "pytorch", version = "*"}
 
 [dev-packages]
 black = "*"

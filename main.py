@@ -66,13 +66,18 @@ testloader = torch.utils.data.DataLoader(
 # Model
 print("==> Building model...")
 
+torch.set_float32_matmul_precision("high")
 net = model.SimpleDLA()
 BEST_ACC = 0.0
-if torch.cuda.device_count() > 1:
-    print("Using", torch.cuda.device_count(), "GPUs!")
+if torch.cuda.device_count() >= 1:
+    print("Parallelized on", torch.cuda.device_count(), "GPUs!")
     net = torch.nn.DataParallel(net)
     cudnn.benchmark = True
+else:
+    print("Parallelized on", torch.cpu.device_count(), "CPUs!")
 net = net.to(device)
+net = torch.compile(net)
+print("Model is compiled!")
 
 if args.checkpoint_in:
     # Load checkpoint.

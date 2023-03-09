@@ -1,4 +1,4 @@
-FROM python:3.10 as base
+FROM registry-1.docker.io/nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu22.04 as base
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
@@ -7,15 +7,19 @@ ENV PYTHONFAULTHANDLER 1
 
 FROM base AS python-deps
 
+RUN apt update -y \
+  && apt install -y \
+  python3 \
+  python3-pip \
+  && rm -rf /var/lib/apt/lists/*
+
 # Install pipenv and compilation dependencies
-RUN pip install pipenv
-RUN apt -y update && apt -y install -y --no-install-recommends gcc
+RUN pip3 install pipenv
 
 # Install python dependencies in /.venv
 COPY Pipfile .
 COPY Pipfile.lock .
 RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
-
 
 FROM base AS runtime
 
