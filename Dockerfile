@@ -1,44 +1,51 @@
-FROM registry-1.docker.io/nvidia/cuda:11.7.1-cudnn8-runtime-ubuntu22.04 as base
+FROM ghcr.io/deepsquare-io/openmpi:devel-cuda11.8.0-cudnn8-rockylinux8 as base
 
 ENV LANG C.UTF-8
 ENV LC_ALL C.UTF-8
 ENV PYTHONDONTWRITEBYTECODE 1
 ENV PYTHONFAULTHANDLER 1
 
-RUN apt update -y \
-  && apt install -y \
-  python3 \
+RUN dnf install -y \
+  python39 \
   && rm -rf /var/lib/apt/lists/*
 
 FROM base AS python-deps
 
-RUN apt update -y \
-  && apt install -y \
-  python3-pip \
+RUN dnf install -y \
+  python39-pip \
+  python39-devel \
+  cmake \
   && rm -rf /var/lib/apt/lists/*
 
 # Install pipenv and compilation dependencies
-RUN pip3 install pipenv
+RUN /usr/bin/python3.9 -m pip install pipenv
+
+ENV HOROVOD_WITH_PYTORCH=1
+ENV HOROVOD_WITH_MPI=1
+ENV HOROVOD_CUDA_HOME=/usr/local/cuda
+ENV HOROVOD_WITHOUT_GLOO=1
+ENV HOROVOD_GPU=CUDA
+
+FROM python-deps AS builder
 
 # Install python dependencies in /.venv
 COPY Pipfile .
 COPY Pipfile.lock .
-RUN PIPENV_VENV_IN_PROJECT=1 pipenv install --deploy
+RUN PIPENV_VENV_IN_PROJECT=1 pipenv --python /usr/bin/python3.9 install --deploy
 
 FROM base AS runtime
 
-RUN apt update -y \
-  && apt install -y \
-  g++ \
-  && rm -rf /var/lib/apt/lists/*
+RUN dnf install -y \
+  gcc-c++ \
+  python39-devel \
+  && dnf clean all
 
-# Copy virtual env from python-deps stage
-COPY --from=python-deps /.venv /.venv
+COPY --from=builder /.venv /.venv
 
 WORKDIR /app
 
 # Install application into container
-COPY . .
+COPY main.py model.py ./
 
 # Run the application
 ENTRYPOINT ["/.venv/bin/python3", "main.py"]

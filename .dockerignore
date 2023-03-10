@@ -4,3 +4,7 @@ __pycache__
 *.pyc
 *.pt
 *.pth
+Dockerfile
+.gitignore
+.vscode
+.github
