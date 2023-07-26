@@ -11,6 +11,13 @@ This example uses the [Deep Layer Aggregation](https://arxiv.org/abs/1707.06484)
 3. Clone this repository and run:
 
    ```shell
+   export HOROVOD_WITH_PYTORCH=1
+   export HOROVOD_WITH_MPI=1
+   export HOROVOD_WITHOUT_GLOO=1
+
+   # If GPU
+   # export HOROVOD_CUDA_HOME=/usr/local/cuda
+   # export HOROVOD_GPU=CUDA
    pipenv install
    ```
 
