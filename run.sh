@@ -6,6 +6,7 @@ podman run \
   -v "$(pwd)/data:/data" \
   -v "$(pwd)/checkpoint:/checkpoint" \
   -u 1000:1000 \
+  --group-add keep-groups \
   --entrypoint /bin/sh \
   ghcr.io/deepsquare-io/cifar-10-example:latest \
   -c '\
